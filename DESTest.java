@@ -1,38 +1,54 @@
+import java.io.File;
 import java.security.spec.*;
+import java.util.Scanner;
+
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
 class DESTest {
    public static void main(String[] args) {
-      String test = "1";
       try {
-         byte[] theKey = null;
-         byte[] theMsg = null; 
-         byte[] theExp = null; 
-         if (test.equals("1")) { 
-            theKey = hexToBytes("0101010101010101");
-            theMsg = hexToBytes("8000000000000000");
-            theExp = hexToBytes("95F8A5E5DD31D900");
-         } else if (test.equals("2")) { 
-            theKey = hexToBytes("38627974656B6579"); // "8bytekey"
-            theMsg = hexToBytes("6D6573736167652E"); // "message."
-            theExp = hexToBytes("7CF45E129445D451");
-         } else {
-            System.out.println("Usage:");
-            System.out.println("java JceSunDesTest 1/2");
-            return;
-         }	
-         KeySpec ks = new DESKeySpec(theKey);
-         SecretKeyFactory kf 
-            = SecretKeyFactory.getInstance("DES");
-         SecretKey ky = kf.generateSecret(ks);
-         Cipher cf = Cipher.getInstance("DES/ECB/NoPadding");
-         cf.init(Cipher.ENCRYPT_MODE,ky);
-         byte[] theCph = cf.doFinal(theMsg);
-         System.out.println("Key     : "+bytesToHex(theKey));
-         System.out.println("Message : "+bytesToHex(theMsg));
-         System.out.println("Cipher  : "+bytesToHex(theCph));
-         System.out.println("Expected: "+bytesToHex(theExp));
+         int testVectorsAmount = 4;
+
+         for(int i = 1; i<=testVectorsAmount; i++){
+            File testVectorFile = new File("test-vector-"+Integer.toString(i)+".txt");
+            Scanner reader = new Scanner(testVectorFile);
+            System.out.println("\n---------------------Test Vector Number "+Integer.toString(i)+"------------------------------\n");
+            int counter = 0;
+            int success = 0;
+            while (reader.hasNextLine()) {
+               String data = reader.nextLine();
+               byte[] theKey = null;
+               byte[] theMsg = null; 
+               byte[] theExp = null; 
+
+               String[] dataSplitted = data.split(" ");
+               theKey = hexToBytes(dataSplitted[0]);
+               theMsg = hexToBytes(dataSplitted[1]);
+               theExp = hexToBytes(dataSplitted[2]);
+
+               KeySpec ks = new DESKeySpec(theKey);
+               SecretKeyFactory kf 
+                  = SecretKeyFactory.getInstance("DES");
+               SecretKey ky = kf.generateSecret(ks);
+               Cipher cf = Cipher.getInstance("DES/ECB/NoPadding");
+               cf.init(Cipher.ENCRYPT_MODE,ky);
+               byte[] theCph = cf.doFinal(theMsg);
+
+               counter++;
+               if(bytesToHex(theCph).equals(bytesToHex(theExp))){
+                  success++;
+               }
+
+               System.out.println("Key     : "+bytesToHex(theKey));
+               System.out.println("Message : "+bytesToHex(theMsg));
+               System.out.println("Cipher  : "+bytesToHex(theCph));
+               System.out.println("Expected: "+bytesToHex(theExp));
+               System.out.println();
+            }
+            System.out.println("Success rate: "+ Double.toString((success/counter)*100)+"%");
+            reader.close();
+         }
       } catch (Exception e) {
          e.printStackTrace();
          return;
