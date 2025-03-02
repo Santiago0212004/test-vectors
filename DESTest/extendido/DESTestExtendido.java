@@ -1,3 +1,5 @@
+package DESTest.extendido;
+
 import java.io.File;
 import java.security.spec.*;
 import java.util.Scanner;
@@ -5,13 +7,13 @@ import java.util.Scanner;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
-class DESTest {
+class DESTestExtendido {
    public static void main(String[] args) {
       try {
          int testVectorsAmount = 4;
 
          for(int i = 1; i<=testVectorsAmount; i++){
-            File testVectorFile = new File("test-vector-"+Integer.toString(i)+".txt");
+            File testVectorFile = new File("DESTest/extendido/test-vector-"+Integer.toString(i)+".txt");
             Scanner reader = new Scanner(testVectorFile);
             System.out.println("\n---------------------Test Vector Number "+Integer.toString(i)+"------------------------------\n");
             int counter = 0;
