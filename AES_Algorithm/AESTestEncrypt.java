@@ -4,7 +4,7 @@ import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Scanner;
 
-class AESTest {
+class AESTestEncrypt {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
